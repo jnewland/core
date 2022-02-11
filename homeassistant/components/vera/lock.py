@@ -28,10 +28,6 @@ from homeassistant.helpers.entity_platform import (
 from . import VeraDevice
 from .common import ControllerData, get_controller_data
 
-# from homeassistant.helpers.entity_component import EntityComponent
-
-
-# Set up the console logger for debugging
 _LOGGER = logging.getLogger(__name__)
 
 ATTR_LAST_USER_NAME = "changed_by_name"
