@@ -76,20 +76,20 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
         self, vera_device: veraApi.VeraLock, controller_data: ControllerData
     ) -> None:
         """Initialize the Vera device."""
-        self._state = None
-        self._cmd_status = None
+        self._state: str | None = None
+        self._cmd_status: str | None = None
         VeraDevice.__init__(self, vera_device, controller_data)
         self.entity_id = ENTITY_ID_FORMAT.format(self.vera_id)
 
     def lock(self, **kwargs: Any) -> None:
         """Lock the device."""
         self.vera_device.lock()
-        self._state = STATE_LOCKED  # type: ignore
+        self._state = STATE_LOCKED
 
     def unlock(self, **kwargs: Any) -> None:
         """Unlock the device."""
         self.vera_device.unlock()
-        self._state = STATE_UNLOCKED  # type: ignore
+        self._state = STATE_UNLOCKED
 
     async def set_new_pin(self, **kwargs: Any) -> None:
         """Set pin on the device."""
@@ -99,7 +99,7 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
             pin=int(kwargs[CONF_PIN]),
         )
         if result.status_code == STATE_OK:
-            self._cmd_status = "Added"  # type: ignore
+            self._cmd_status = "Added"
         else:
             self._cmd_status = result.text
             _LOGGER.error("Failed to call %s: %s", "veralock.setpin", result.text)
@@ -110,7 +110,7 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
         _LOGGER.debug("calling veralock.clear_slot_pin")
         result = self.vera_device.clear_slot_pin(slot=kwargs["slot"])
         if result.status_code == STATE_OK:
-            self._cmd_status = "Removed"  # type: ignore
+            self._cmd_status = "Removed"
         else:
             self._cmd_status = result.text
             _LOGGER.error("Failed to call %s: %s", "veralock.clearpin", result.text)
@@ -154,7 +154,4 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
 
     def update(self) -> None:
         """Update state by the Vera device callback."""
-        if self.vera_device.is_locked(True):
-            self._state = STATE_LOCKED  # type: ignore
-        else:
-            self._state = STATE_LOCKED  # type: ignore
+        self._state = STATE_LOCKED if self.vera_device.is_locked(True) else STATE_LOCKED
