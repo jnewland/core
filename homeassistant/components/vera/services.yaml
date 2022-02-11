@@ -8,15 +8,15 @@ setpin:
     name:
       # Field name as shown in UI
       name: Name
-      description: Name of the user you need code for
+      description: Name of PIN
       example: "John Doe"
       default: "John Doe"
       required: true
     pin:
       name: Pin
-      description: 8-digit pin. Expecting Integer Value, not in String Format.
-      example: 12345678
-      default: 12345678
+      description: 4-8 digit PIN
+      example: "0123"
+      default: "0123"
       required: true
 
 clearpin:
