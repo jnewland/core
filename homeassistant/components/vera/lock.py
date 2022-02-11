@@ -102,7 +102,7 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
             name=kwargs[CONF_NAME], pin=kwargs[CONF_PIN]
         )
         if result.status_code == STATE_OK:
-            self._cmd_status = "Removed"  # type: ignore
+            self._cmd_status = "Added"  # type: ignore
         else:
             self._cmd_status = result.text
             _LOGGER.error("Failed to call %s: %s", "veralock.setpin", result.text)
@@ -110,7 +110,7 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
 
     async def clear_slot_pin(self, **kwargs: Any) -> None:
         """Clear pin on the device."""
-        _LOGGER.debug("calling veralock.celarpin")
+        _LOGGER.debug("calling veralock.clear_slot_pin")
         result = self.vera_device.clear_slot_pin(slot=kwargs["slot"])
         if result.status_code == STATE_OK:
             self._cmd_status = "Removed"  # type: ignore
