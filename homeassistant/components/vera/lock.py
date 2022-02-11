@@ -138,8 +138,12 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
             data[ATTR_LAST_USER_NAME] = last_user[1]
 
         data[ATTR_LOW_BATTERY] = self.vera_device.get_low_battery_alert()
-        data[ATTR_CREDENTIALS] = f"{self.vera_device.get_pin_codes()}"
-        data[CONF_COMMAND_STATE] = self._cmd_status
+        credentials = self.vera_device.get_pin_codes()
+        if credentials is not None:
+            data[ATTR_CREDENTIALS] = f"{credentials}"
+        status = self._cmd_status
+        if status is not None:
+            data[CONF_COMMAND_STATE] = self._cmd_status
         return data
 
     @property
