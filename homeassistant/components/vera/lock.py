@@ -39,7 +39,7 @@ ATTR_LOW_BATTERY = "low_battery"
 SET_PIN_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_NAME): vol.All(str, vol.Length(min=1)),
-        vol.Required(CONF_PIN): vol.All(int, vol.Range(min=10000000, max=99999999)),
+        vol.Required(CONF_PIN): vol.All(str, vol.Range(min=4, max=8)),
         vol.Optional("slot"): vol.All(int, vol.Range(min=1, max=244)),
     }
 )
@@ -99,7 +99,8 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
         """Set pin on the device."""
         _LOGGER.debug("calling veralock.setpin to add with pin")
         result = self.vera_device.set_new_pin(
-            name=kwargs[CONF_NAME], pin=kwargs[CONF_PIN]
+            name=kwargs[CONF_NAME],
+            pin=int(kwargs[CONF_PIN]),
         )
         if result.status_code == STATE_OK:
             self._cmd_status = "Added"  # type: ignore
