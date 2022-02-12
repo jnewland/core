@@ -163,4 +163,6 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
 
     def update(self) -> None:
         """Update state by the Vera device callback."""
-        self._state = STATE_LOCKED if self.vera_device.is_locked(True) else STATE_LOCKED
+        self._state = (
+            STATE_LOCKED if self.vera_device.is_locked(True) else STATE_UNLOCKED
+        )
