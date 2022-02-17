@@ -1,4 +1,5 @@
 """Vera tests."""
+from http import HTTPStatus
 from unittest.mock import MagicMock
 
 import pyvera as pv
@@ -26,13 +27,14 @@ async def test_lock(
     vera_device.name = "dev1"
     vera_device.category = pv.CATEGORY_LOCK
     vera_device.is_locked = MagicMock(return_value=False)
-    vera_device.set_lock_pin = MagicMock(
-        return_value=MagicMock(
-            status_code=STATE_OK,
-        )
+    vera_device.set_new_pin = MagicMock(
+        return_value=MagicMock(status_code=HTTPStatus.OK, text="mock")
+    )
+    vera_device.clear_slot_pin = MagicMock(
+        return_value=MagicMock(status_code=HTTPStatus.OK, text="mock")
     )
     vera_device.get_pin_codes = MagicMock(
-        return_value=[[0, "test", "0123"], [1, "test2", "1234"]]
+        return_value=[[0, "test1", "0123"], [1, "test2", "1234"]]
     )
     entity_id = "lock.dev1_1"
 
@@ -68,8 +70,8 @@ async def test_lock(
     await hass.async_block_till_done()
     assert hass.states.get(entity_id).state == STATE_UNLOCKED
 
-    assert "0123" in hass.states.get(entity_id).attributes[ATTR_CREDENTIALS]
-    assert "1234" in hass.states.get(entity_id).attributes[ATTR_CREDENTIALS]
+    assert "test1" in hass.states.get(entity_id).attributes[ATTR_CREDENTIALS]
+    assert "test2" in hass.states.get(entity_id).attributes[ATTR_CREDENTIALS]
 
     await hass.services.async_call(
         "vera",
@@ -77,5 +79,23 @@ async def test_lock(
         {"entity_id": entity_id, "name": "test3", "pin": "5678"},
     )
     await hass.async_block_till_done()
-    vera_device.set_lock_pin.assert_called()
+    vera_device.set_new_pin.assert_called()
+    assert hass.states.get(entity_id).attributes[CONF_COMMAND_STATE] == STATE_OK
+
+    await hass.services.async_call(
+        "vera",
+        "clear_lock_pin",
+        {"entity_id": entity_id, "name": "test1"},
+    )
+    await hass.async_block_till_done()
+    vera_device.clear_slot_pin.assert_called_once()
+    assert hass.states.get(entity_id).attributes[CONF_COMMAND_STATE] == STATE_OK
+
+    await hass.services.async_call(
+        "vera",
+        "clear_lock_pin",
+        {"entity_id": entity_id, "name": "missing"},
+    )
+    await hass.async_block_till_done()
+    vera_device.clear_slot_pin.assert_called_once()
     assert hass.states.get(entity_id).attributes[CONF_COMMAND_STATE] == STATE_OK

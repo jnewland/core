@@ -95,7 +95,7 @@ class VeraLock(VeraDevice[veraApi.VeraLock], LockEntity):
 
     def set_lock_pin(self, **kwargs: Any) -> None:
         """Set pin on the device."""
-        _LOGGER.debug("calling veralock.set_lock_pin to add with pin")
+        _LOGGER.debug("calling veralock.set_lock_pin")
         result = self.vera_device.set_new_pin(
             name=kwargs[CONF_NAME],
             # fix upstream to accept strings
