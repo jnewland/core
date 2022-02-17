@@ -79,7 +79,16 @@ async def test_lock(
         {"entity_id": entity_id, "name": "test3", "pin": 5678},
     )
     await hass.async_block_till_done()
-    vera_device.set_new_pin.assert_called()
+    vera_device.set_new_pin.assert_called_with(name="test3", pin=5678)
+    assert hass.states.get(entity_id).attributes[CONF_COMMAND_STATE] == STATE_OK
+
+    await hass.services.async_call(
+        "vera",
+        "set_lock_pin",
+        {"entity_id": entity_id, "name": "test3", "pin": "0123"},
+    )
+    await hass.async_block_till_done()
+    vera_device.set_new_pin.assert_called_with(name="test3", pin=123)
     assert hass.states.get(entity_id).attributes[CONF_COMMAND_STATE] == STATE_OK
 
     await hass.services.async_call(
