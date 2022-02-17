@@ -76,7 +76,7 @@ async def test_lock(
     await hass.services.async_call(
         "vera",
         "set_lock_pin",
-        {"entity_id": entity_id, "name": "test3", "pin": "5678"},
+        {"entity_id": entity_id, "name": "test3", "pin": 5678},
     )
     await hass.async_block_till_done()
     vera_device.set_new_pin.assert_called()
